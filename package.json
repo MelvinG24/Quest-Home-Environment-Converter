@@ -1,0 +1,18 @@
+{
+  "name": "quest-home-environment-converter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "electron": "^28.0.0",
+    "electron-reloader": "^1.2.3",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "Melvin Guerrero",
+  "license": "MIT"
+}

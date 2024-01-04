@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+
+    <link rel="stylesheet" href="src/css/style.css"/>
+    <title>Panorama</title>
+</head>
+<body>
+    <div id="barPano"></div>
+    <main id="mainPano">
+        <div>
+            <div id="drop">
+                <span>Drag/Drop your 360&deg; image here<br/>(Also your Audio file if desired)</span>
+                <img src="./src/img/dropPanorama-04.svg" alt="Drop Panorama and Audio file here">
+            </div>
+            <div class="apk_package_txt ">
+                <div style="padding-bottom: 10px;">
+                    <span>Audio</span>
+                    <input type="text" name="Package" id="Package">
+                </div>
+            </div>
+            <div id="panoInstruction">
+                <ol>
+                    <li>Drag/Drop your .JPG or .PNG image file(and audio file if desired)</li>
+                    <li>Click on image to set your desired viewpoint(green line)</li>
+                    <li>Choose WinterLodge/ClassicHome/SpaceStation</li>
+                        <ul start="3.1">
+                            <li>Setup audio file if desired(default is silent-audio)</li>
+                        </ul>
+                    <li>Choose Auto Install if you want(connect Quest)</li>
+                    <li>Click 'Build Panorama'</li>
+                </ol>
+            </div>
+        </div>
+        <div>
+            <div class="apk_ops">
+                <div><input type="checkbox" name="DecraseVolume" id="DecraseVolume"> <label for="DecraseVolume">Decrase volumen by <select id="DVComboBox"></select> (19 recommend)</label></div>
+                <div><input type="checkbox" name="AudioDefault" id="AudioDefault">   <label for="AudioDefault">Replace audio with default audio file</label></div>
+                <div><input type="checkbox" name="AudioSilent" id="AudioSilent">     <label for="AudioSilent">Replace audio with silent audio file</label></div>
+                <div><input type="checkbox" name="EncodeOGG" id="EncodeOGG">         <label for="EncodeOGG">Encode OGG Audio File (lower filesize)</label></div>
+            </div>
+            <div>
+                <button class="btnBig">Build Panorama</button>
+                <button id="btnCancel" class="btnBig">Cancel</button>
+            </div>
+        </div>
+    </main>
+</body>
+<script defer src="src/js/panorama.js"></script>
+</html>

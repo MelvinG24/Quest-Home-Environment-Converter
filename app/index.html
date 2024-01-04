@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+
+    <link rel="stylesheet" href="../node_modules/xterm/css/xterm.css"/>
+    <link rel="stylesheet" href="src/css/style.css"/>
+    
+    <title>Quest Home Environment Converter</title>
+</head>
+<body>
+    <div id="title-bar">
+        <span id="title" class="document-name">Quest Home Environment Converter</span>
+        <img alt="Editor Latino" src="./src/img/CustomHome-Logo.svg">
+        <div id="title-bar-btns">
+            <div id="title-bar-extra">
+                <div id="btnPin"    class="bar-extra bar-extra-pin"         title="Pin window to top"></div>
+                <div id="btnHelp"   class="bar-extra bar-extra-help"        title="Help"></div>
+                <div id="btnMenu"   class="bar-extra bar-extra-menu"        title="Menu"></div>
+            </div>
+            <div id="title-bar-btns-window">
+                <div id="btnMin"    class="window-icon window-minimize"     title="Minimize"></div>
+                <div id="btnClose"  class="window-icon window-close"        title="Close"></div>
+            </div>
+        </div>
+    </div>
+    <main>
+        <div class="main">
+            <aside>
+                <div id="drop">
+                    <span>Drag/Drop an APK file here<br/>(Also an Audio file if desired)</span>
+                    <img src="./src/img/dropAPKAudio.svg" alt="Drop APK and Audio files here">
+                </div>
+                <button id="openEnvAPK" class="btnSmall">Open Environment APK</button>
+                <button class="btnBig">Convert and Install New Environment</button>
+                <div>
+                    <input type="checkbox" id="install-af-conversion" name="install-af-conversion" value="install-af-conversion">
+                    <label for="install-af-conversion">Auto Install after conversion</label>
+                </div>
+                <button id="btnPano" class="btnBig">Panorama Builder</button>
+            </aside>
+            <section>
+                <!-- Quest -->
+                <div>
+                    <div id="quest">
+                        <div id="status_id"></div>
+                        <img src="./src/img/Quest.png" alt="Meta Quest">
+                        <div></div>
+                        <div>
+                            <span>Status</span><br/>
+                            <span id="status">Disconnected</span>
+                        </div>
+                    </div>
+                    <div id="quest_settings">
+                        <div id="btnDrive"  class="bar-extra bar-extra-drive"       title="Mount Quest as Drive"></div>
+                        <div id="btnWifi"   class="bar-extra bar-extra-wifi"        title="Connect via Wifi"></div>
+                        <div>
+                            <button class="btnSmall">Set capture size to 720p</button>
+                            <button class="btnSmall">Save last Quest video to PC</button>
+                            <button class="btnSmall">Only install APK</button>
+                            <button class="btnSmall">Uninstall APK</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- APK files -->
+                <div>
+                    <div class="apk_package_txt">
+                        <div>
+                            <span>APK</span>
+                            <input type="text" name="APK" id="APK">
+                        </div>
+                        <hr>
+                        <div>
+                            <span>Audio</span>
+                            <input type="text" name="Audio" id="Audio">
+                        </div>
+                    </div>
+                    <div class="apk_ops_area">
+                        <div class="apk_ops">
+                            <div><input type="checkbox" name="DecraseVolume"id="DecraseVolume"> <label for="DecraseVolume">Decrase volumen by <select id="DVComboBox"></select> (19 recommend)</label></div>
+                            <div><input type="checkbox" name="AudioDefault" id="AudioDefault">  <label for="AudioDefault">Replace audio with default audio file</label></div>
+                            <div><input type="checkbox" name="AudioSilent"  id="AudioSilent">   <label for="AudioSilent">Replace audio with silent audio file</label></div>
+                            <div><input type="checkbox" name="EncodeOGG"    id="EncodeOGG">     <label for="EncodeOGG">Encode OGG Audio File (lower filesize)</label></div>
+                        </div>
+                        <div>
+                            <span id="processStatustxt" class="psTXT-inactive">text</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Package Name -->
+                <div>
+                    <div class="apk_package_txt">
+                        <hr>
+                        <div style="padding-bottom: 10px;">
+                            <span>Package</span>
+                            <input type="text" name="Package" id="Package">
+                        </div>
+                        <div>
+                            <span>App name</span>
+                            <input type="text" name="AppName" id="AppName">
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+                <!-- Build -->
+                <div class="build">
+                    <span>The Buttons on the right area only for environment creator! --&gt;</span>
+                    <div>
+                        <div>
+                            <button id="buildInstallEnv" class="btnBig">Build and Install Environment</button>
+                            <div>
+                                <input type="checkbox" id="install-af-build" name="install-af-build" value="install-af-build">
+                                <label for="install-af-build">Auto Install after build</label>
+                            </div>
+                            <button class="btnSmall">Unpack APK to ..\Build</button>
+                        </div>
+                        <div>
+                            <button id="openBuildFolder" class="btnBig">Open Build Folder</button>
+                            <div>
+                                <input type="checkbox" id="KTXcompress" name="compress-ktx" value="compress-ktx">
+                                <label for="KTXcompress">Compress to KTX</label>
+                            </div>
+                            <button class="btnSmall">KTX to PNG Convert</button>
+                        </div>
+                        <div>
+                            <button class="btnBig">Create 2 releases with and without audio</button>
+                            <div>
+                                <input type="checkbox" id="build-install" name="build-install" value="build-install">
+                                <label for="build-install">Auto Build and Install</label>
+                            </div>
+                            <button id="deleteFilesBuild" class="btnSmall">Delete all files in build</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div id="termConteiner">
+            <div id="terminal"></div>
+        </div>
+        <!-- <p>
+            We are using Node.js <span id="node-version"></span>,
+            Chromium <span id="chrome-version"></span>,
+            and Electron <span id="electron-version"></span>
+        </p> -->
+    </main>
+</body>
+<script src="../node_modules/xterm/lib/xterm.js"></script>
+<script defer src="src/js/indexScript.js"></script>
+</html>
