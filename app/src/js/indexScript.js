@@ -83,78 +83,51 @@ ipc.on("build.buildInstallEnv", async (e, buildPath, filesPath) => {
     }
 
     if (KTXcompress.checked) {
-        // TODO: Add erro handle
-        // TODO: Check why term clean after execution
-        // const fFiles        = [...fFormat, '.gltf']
         try {
             await fs.promises.readdir(buildPath)
             .then(files => {
                 files.forEach(f => {
-                    let fpath = path.join(buildPath, f);
-                    let fileExtension = path.extname(fpath).toLowerCase();
-                    if (fFormat.includes(fileExtension)) {
-                        term.writeln(`Compress Texture File: ${fpath}`);
-                        let baseName = path.basename(fpath, fileExtension);
-        
-                        let command = `${filePath}/img2ktx.exe -o "${buildPath}/${baseName}.ktx" -m -f ASTC8x8 "${filePath}"`;
-                        // let command = `${path.join(filesPath, "img2ktx.exe")} -o "${path.join(buildPath, path.basename(x))}" -m -f ASTC8x8 "${path.join(buildPath, x)}"`;
-        
+                    const fPath             = path.join(buildPath, f);
+                    const fExt              = path.extname(fPath).toLowerCase();
+
+                    if (fFormat.includes(fExt)) {
+                        term.writeln(`Compress Texture File: ${fPath}`);
+
+                        const fName         = path.basename(fPath, fExt);
+                        const command       = `${path.join(filesPath,"img2ktx.exe")} -o "${path.join(buildPath, fName)}.ktx" -m -f ASTC8x8 "${fPath}"`;
+
                         execSync(command);
-                        fs.unlinkSync(fpath);
+                        fs                  .unlinkSync(fPath);
                     }
-                    if (fileExtension === ".gltf") {
-                        let fileContent = fs.readFileSync(fpath, 'utf8');
-                        fileContent = fileContent.replace(/\.jpg/g, ".ktx");
-                        fileContent = fileContent.replace(/\/jpg/g, ".ktx");
-                        fileContent = fileContent.replace(/\.jpeg/g, ".ktx");
-                        fileContent = fileContent.replace(/\/jpg/g, ".ktx");
-                        fileContent = fileContent.replace(/\.png/g, ".ktx");
-                        fileContent = fileContent.replace(/\/png/g, ".ktx");
-                        fileContent = fileContent.replace(/\/bmp/g, ".ktx");
-                        fs.writeFileSync(fpath, fileContent);
+                    if (fExt === ".gltf") {
+                        let tkt             = fs.readFileSync(fPath, "binary");
+                        if (tkt == null || !Array.isArray(tkt)) throw `File "${f}" is Invalid or Corrupt`
+
+                        tkt                 = tkt.replace(/\.jpg/g,     ".ktx");
+                        tkt                 = tkt.replace(/\/jpg/g,     ".ktx");
+                        tkt                 = tkt.replace(/\.jpeg/g,    ".ktx");
+                        tkt                 = tkt.replace(/\/jpeg/g,    ".ktx");
+                        tkt                 = tkt.replace(/\.png/g,     ".ktx");
+                        tkt                 = tkt.replace(/\/png/g,     ".ktx");
+                        tkt                 = tkt.replace(/\/bmp/g,     ".ktx");
+
+                        fs                  .writeFileSync(fPath, tkt, "binary");
                     }
                 })
             })
-
         } catch(err) {
-            term.writeln(`An error occurred: ${err}`)
+            term.writeln(`\n::: ERROR :::\nAn error occurred: ${err}`)
+            return;
         }
-        // const ret           = await fs.promises.readdir(buildPath)
-        // .then(files => {
-        //     fFiles.forEach(f => {
-        //         files.filter(x => {
-        //             if (x.endsWith(`${f}`) != '.gltf') {
-        //                 term.writeln(`Compress Texture File: ${buildPath}\\${x}\n`)
-
-        //                 let command = `${path.join(filesPath, "img2ktx.exe")} -o "${path.join(buildPath, path.basename(x))}" -m -f ASTC8x8 "${path.join(buildPath, x)}"`;
-
-        //                 execSync(command)
-        //                 fs.unlinkSync(path.join(buildPath, x))
-        //             }
-        //             if (x.endsWith(`${f}`) == '.gltf') {
-        //                 let tkt     =   fs.readFileSync(path.join(buildPath, x), "binary");
-
-        //                 tkt         =   tkt.replace(/\.jpg/g,  ".ktx");
-        //                 tkt         =   tkt.replace(/\/jpg/g,  ".ktx");
-        //                 tkt         =   tkt.replace(/\.jpeg/g, ".ktx");
-        //                 tkt         =   tkt.replace(/\/jpeg/g, ".ktx");
-        //                 tkt         =   tkt.replace(/\.png/g,  ".ktx");
-        //                 tkt         =   tkt.replace(/\/png/g,  ".ktx");
-        //                 tkt         =   tkt.replace(/\/bmp/g,  ".ktx");
-
-        //                                 fs.writeFileSync(path.join(buildPath, x), tkt);
-        //             }
-        //         })
-        //     })
-        // })
     }
 
-    const checkBuildPath    = await fs.promises.readdir(buildPath).then(files => {
-        let j = false,      k = false
-        fFormat.map(f => {  if (files.filter(x => x.endsWith(`${f}`)).length > 0) j = true })
-                            if (files.filter(x => x.endsWith(`${fK}`)).length > 0) k = true
-        return              (j === true && k === true) ? true : false;
-    })
+    const checkBuildPath    = await fs.promises.readdir(buildPath)
+                                .then(files => {
+                                    let j = false,      k = false
+                                    fFormat.map(f => {  if (files.filter(x => x.endsWith(`${f}`)).length > 0) j = true })
+                                                        if (files.filter(x => x.endsWith(`${fK}`)).length > 0) k = true
+                                    return              (j === true && k === true) ? true : false;
+                                })
 
     if (checkBuildPath) {
         ipc.invoke              ("dialog.showDialog", "Error", ".JPG/.PNG and .KTX present in same folder!");
