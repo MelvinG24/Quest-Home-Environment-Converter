@@ -38,8 +38,8 @@
                 <button id="openEnvAPK" class="btnSmall">Open Environment APK</button>
                 <button class="btnBig">Convert and Install New Environment</button>
                 <div>
-                    <input type="checkbox" id="install-af-conversion" name="install-af-conversion" value="install-af-conversion">
-                    <label for="install-af-conversion">Auto Install after conversion</label>
+                    <input type="checkbox" id="installAfterConversion" name="installAfterConversion" value="installAfterConversion">
+                    <label for="installAfterConversion">Auto Install after conversion</label>
                 </div>
                 <button id="btnPano" class="btnBig">Panorama Builder</button>
             </aside>
@@ -71,16 +71,17 @@
                     <div class="apk_package_txt">
                         <div>
                             <span>APK</span>
-                            <input type="text" name="APK" id="APK">
+                            <input type="text" name="APK" id="APKtxt">
                         </div>
                         <hr>
                         <div>
                             <span>Audio</span>
-                            <input type="text" name="Audio" id="Audio">
+                            <input type="text" name="Audio" id="Audiotxt">
                         </div>
                     </div>
                     <div class="apk_ops_area">
                         <div class="apk_ops">
+                            <!-- TODO: Change to OptionBox -->
                             <div><input type="checkbox" name="DecraseVolume"id="DecraseVolume"> <label for="DecraseVolume">Decrase volumen by <select id="DVComboBox"></select> (19 recommend)</label></div>
                             <div><input type="checkbox" name="AudioDefault" id="AudioDefault">  <label for="AudioDefault">Replace audio with default audio file</label></div>
                             <div><input type="checkbox" name="AudioSilent"  id="AudioSilent">   <label for="AudioSilent">Replace audio with silent audio file</label></div>
@@ -113,8 +114,8 @@
                         <div>
                             <button id="buildInstallEnv" class="btnBig">Build and Install Environment</button>
                             <div>
-                                <input type="checkbox" id="install-af-build" name="install-af-build" value="install-af-build">
-                                <label for="install-af-build">Auto Install after build</label>
+                                <input type="checkbox" id="installAfterBuild" name="installAfterBuild" value="installAfterBuild">
+                                <label for="installAfterBuild">Auto Install after build</label>
                             </div>
                             <button class="btnSmall">Unpack APK to ..\Build</button>
                         </div>
@@ -129,8 +130,8 @@
                         <div>
                             <button class="btnBig">Create 2 releases with and without audio</button>
                             <div>
-                                <input type="checkbox" id="build-install" name="build-install" value="build-install">
-                                <label for="build-install">Auto Build and Install</label>
+                                <input type="checkbox" id="installBuild" name="installBuild" value="installBuild">
+                                <label for="installBuild">Auto Build and Install</label>
                             </div>
                             <button id="deleteFilesBuild" class="btnSmall">Delete all files in build</button>
                         </div>
