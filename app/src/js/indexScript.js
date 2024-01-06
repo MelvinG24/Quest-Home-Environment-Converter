@@ -200,8 +200,7 @@ function weit3(filesPath) {
 function killer(filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', 'scene.zip'], i = 0) {
     fFiles.forEach(f =>             {
                                         if (fs.existsSync(path.join(filesPath, f))) {
-                                            if (f === 'tmp.zip')    { fs.unlinkSync(path.join(filesPath, 'tmp.apk'))    }
-                                            else                    { fs.unlinkSync(path.join(filesPath, f))            }
+                                            fs.unlinkSync(path.join(filesPath, f))
                                         }
                                     })
 
@@ -216,3 +215,14 @@ function tell(filesPath, fPathTMP) {
     // TODO: Tell
     return;
 }
+
+
+//
+//
+// ***************************************************
+// Miscellaneous
+// ***************************************************
+//
+//
+
+ipc.on ("modal.toggle", (e, b) =>       { document.querySelector('#modalBlock').classList.toggle('toggleDisplay', b)   })

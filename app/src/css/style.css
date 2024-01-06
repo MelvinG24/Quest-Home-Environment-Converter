@@ -91,10 +91,12 @@ img {
 }
 
 .btnSmall                                       { min-height: 30px; }
-.btnBig                                         { height: 54px; }
+.btnBig                                         { height: 54px;     }
 
 button,
-.bar-extra                                      { cursor: pointer; }
+.bar-extra                                      { cursor: pointer;  }
+
+.toggleDisplay                                  { display: block !important;   }
 
 #title-bar {
     -webkit-app-region: drag;
@@ -195,6 +197,17 @@ main {
     flex-direction: column;
     padding: 10px;
 }
+    #modalBlock {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        backdrop-filter: blur(3px);
+        background-color: rgba(17,17,17,0.5);
+        z-index: 100;
+    }
     .main {
         height: 100%;
         display: flex;
