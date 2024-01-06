@@ -23,13 +23,8 @@ const term              = new Terminal({
                                     rows:           1
                                 });
 
-
 let crea = null
-// TODO: toggle two checkbox simultaniusly
-// installAfterConversion.addEventListener ("toggle", 1, true).toggle) {
 
-    
-// }
 
 //
 //
@@ -47,18 +42,19 @@ btnPin              .addEventListener   ('click', () => {
                                         })
 
 // btnWindow
-btnMin              .addEventListener   ('click', () => { ipc.send('miniApp')           })
-btnClose            .addEventListener   ('click', () => { ipc.send('closeApp')          })
+btnMin              .addEventListener   ('click', () => { ipc.send('miniApp')                           })
+btnClose            .addEventListener   ('click', () => { ipc.send('closeApp')                          })
 
 // btnAside
-openEnvAPK          .addEventListener   ('click', () => { ipc.send('openEnvAPK')        })
-btnPano             .addEventListener   ('click', () => { ipc.send('panoWin')           })
+openEnvAPK          .addEventListener   ('click', () => { ipc.send('openEnvAPK')                        })
+insllAfConver       .addEventListener   ('click', () => { toggleCheck(insllAfConver, insllAfBuild);     })
+btnPano             .addEventListener   ('click', () => { ipc.send('panoWin')                           })
 
 // BuildButtons
-buildInstallEnv     .addEventListener   ('click', () => { ipc.send('buildInstallEnv')   })
-openBuildFolder     .addEventListener   ('click', () => { ipc.send('openBuildFolder')   })
-
-deleteFilesBuild    .addEventListener   ('click', () => { ipc.send('deleteFilesBuild')  })
+buildInstallEnv     .addEventListener   ('click', () => { ipc.send('buildInstallEnv')                   })
+insllAfBuild        .addEventListener   ('click', () => { toggleCheck(insllAfBuild, insllAfConver);     })
+openBuildFolder     .addEventListener   ('click', () => { ipc.send('openBuildFolder')                   })
+deleteFilesBuild    .addEventListener   ('click', () => { ipc.send('deleteFilesBuild')                  })
 
 
 // Terminal
@@ -226,3 +222,5 @@ function tell(filesPath, fPathTMP) {
 //
 
 ipc.on ("modal.toggle", (e, b) =>       { document.querySelector('#modalBlock').classList.toggle('toggleDisplay', b)   })
+
+function toggleCheck(e, d)              { d.checked = e.checked }
