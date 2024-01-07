@@ -14,7 +14,15 @@
 </head>
 <body>
     <!-- Dialog -->
-    <dialog>
+    <dialog id="modal-help">
+        <form method="dialog">
+            <p>Open tutorial in Browser or PDF</p>
+            <button type="submit" value="web">Browser</button>
+            <button type="submit" value="pdf">PDF</button>
+            <button type="submit" value="cancel">Cancel</button>
+        </form>
+    </dialog>
+    <dialog id="modal-menu">
         <form method="dialog">
             <p>Tabs or spaces?</p>
             <button type="submit" value="wrong">Tabs</button>

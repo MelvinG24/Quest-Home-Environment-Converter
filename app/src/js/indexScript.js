@@ -23,8 +23,14 @@ const term              = new Terminal({
                                     rows:           1
                                 });
 
+const appRoot           = __dirname.slice(0, -4)
+const buildPath         = path.join(appRoot, "Build")
+const filesPath         = path.join(appRoot, "files")
+const fPathTMP          = path.join(filesPath, "tmp")
+
+const modalHelp         = document.querySelector("#modal-help")
+
 let crea = null
-let filesPath, fPathTMP, buildPath;
 
 
 //
@@ -41,25 +47,26 @@ btnPin              .addEventListener   ('click', () => {
                                             btnPin.classList.toggle("bar-extra-pin-active");
                                             ipc.send('pinApp');
                                         })
-btnMenu             .addEventListener   ('click', () => { document.querySelector("dialog").showModal(); })
+btnHelp             .addEventListener   ('click', () => { modalHelp.showModal()                                 })
+btnMenu             .addEventListener   ('click', () => { document.querySelector("#modal-menu").showModal();    })
 
 // btnWindow
-btnMin              .addEventListener   ('click', () => { ipc.send('miniApp')                           })
-btnClose            .addEventListener   ('click', () => { ipc.send('closeApp')                          })
+btnMin              .addEventListener   ('click', () => { ipc.send('miniApp')                                   })
+btnClose            .addEventListener   ('click', () => { ipc.send('closeApp')                                  })
 
-// btnAside
-openEnvAPK          .addEventListener   ('click', () => { ipc.send('openEnvAPK')                        })
-insllAfConver       .addEventListener   ('click', () => { toggleCheck(insllAfConver, insllAfBuild);     })
-btnPano             .addEventListener   ('click', () => { ipc.send('panoWin')                           })
+// btnAside     
+openEnvAPK          .addEventListener   ('click', () => { ipc.send('openEnvAPK')                                })
+insllAfConver       .addEventListener   ('click', () => { toggleCheck(insllAfConver, insllAfBuild);             })
+btnPano             .addEventListener   ('click', () => { ipc.send('panoWin')                                   })
 
-// btnQuest
-btnDrive            .addEventListener   ('click', () => { ipc.send('mountUSB')                          })
+// btnQuest     
+btnDrive            .addEventListener   ('click', () => { ipc.send('mountUSB')                                  })
 
 // btnBuild
-buildInstallEnv     .addEventListener   ('click', () => { ipc.send('buildInstallEnv')                   })
-insllAfBuild        .addEventListener   ('click', () => { toggleCheck(insllAfBuild, insllAfConver);     })
-openBuildFolder     .addEventListener   ('click', () => { ipc.send('openBuildFolder')                   })
-deleteFilesBuild    .addEventListener   ('click', () => { ipc.send('deleteFilesBuild')                  })
+buildInstallEnv     .addEventListener   ('click', () => { ipc.send('buildInstallEnv')                           })
+insllAfBuild        .addEventListener   ('click', () => { toggleCheck(insllAfBuild, insllAfConver);             })
+openBuildFolder     .addEventListener   ('click', () => { ipc.send('openBuildFolder')                           })
+deleteFilesBuild    .addEventListener   ('click', () => { ipc.send('deleteFilesBuild')                          })
 
 
 // Terminal
@@ -77,18 +84,14 @@ ipc.on("term.inData", (e, d) => {
 // })
 
 // Build
-ipc.on("build.buildInstallEnv", async (e, b, f) => {
-    filesPath               = f
-    fPathTMP                = path.join(filesPath, 'tmp')
-    buildPath               = b
-
+ipc.on("build.buildInstallEnv", async () => {
     const fFormat           =   ['.jpg', '.jpeg', '.png', '.bmp']
     const fK                =   '.ktx'
 
-    if ((await fs.promises.readdir(path.join(filesPath, 'tmp'))).length != 0) {
+    if ((await fs.promises.readdir(fPathTMP)).length != 0) {
         const fFiles        =   ['_WORLD_MODEL.gltf.ovrscene', 'scene.zip', '_BACKGROUND_LOOP.ogg']
         fFiles.forEach(f =>     {
-                                    if (fs.existsSync(path.join(filesPath, 'tmp', f))) fs.unlinkSync(path.join(filesPath, 'tmp',f))
+                                    if (fs.existsSync(path.join(fPathTMP, f))) fs.unlinkSync(path.join(fPathTMP, f))
                                 })
     }
 
@@ -157,19 +160,37 @@ ipc.on("build.buildInstallEnv", async (e, b, f) => {
 //
 //
 
-ipc.on("quest.MountUSB", (e, filesPath) => {
+modalHelp.addEventListener('close', () => {
+    // TODO: Open on Web-browser not on electron
+    switch(modalHelp.returnValue) {
+        case "web":
+            open("https://documentcloud.adobe.com/link/track?uri=urn:aaid:scds:US:378deebf-9e73-4100-bdb1-40b816baef58");
+            break;
+        case "pdf":
+            open(appRoot + "\\EnviromentConverterBuilder_HowTo.pdf");
+            break;
+        default:
+            break;
+    }
+})
+
+ipc.on("quest.MountUSB", () => {
     try {
         const command       = `"${path.join(filesPath, "adb.exe")}" shell svc usb setFunctions mtp true`;
 
         execSync            (command)
 
-        shell               .beep()
-        document.querySelector('#status_id').classList.add('questConnected_id')
-        document.querySelector('#status').classList.add('questConnected_txt')
-        document.querySelector('#status').textContent = "Connected"
-        document.querySelector('#btnDrive').classList.add('questConnected_txt')
-        term.write('>>> Quest mounted as drive <<<\n')
+        shell               .beep                                   ()
+        document            .querySelector('#status_id')            .classList.add('questConnected_id')
+        document            .querySelector('#status')               .classList.add('questConnected_txt')
+        document            .querySelector('#btnDrive')             .classList.add('questConnected_txt')
+        document            .querySelector('#status')               .textContent = "Connected"
+        term                .write                                  ('>>> Quest mounted as drive <<<\n')
     } catch(err) {
+        document            .querySelector('#status_id')            .classList.remove('questConnected_id')
+        document            .querySelector('#status')               .classList.remove('questConnected_txt')
+        document            .querySelector('#btnDrive')             .classList.remove('questConnected_txt')
+        document            .querySelector('#status')               .textContent = "Disconnected"
         term.writeln(`\n::: ERROR :::\n ${err}`)
         return;
     }
@@ -228,7 +249,7 @@ function killer(fPath = filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', '
                                     })
 
     if (i > 0)                      { return }
-    else                            { killer(path.join(filesPath, 'tmp'), [...fFiles, 'temp_ec.wav'], 1) }
+    else                            { killer(fPathTMP, [...fFiles, 'temp_ec.wav'], 1) }
 
     tell()
 }

@@ -74,7 +74,7 @@ const createMainWindow = function() {
                                             const onTop = mainWindow.isAlwaysOnTop();
                                             mainWindow.setAlwaysOnTop(!onTop);
                                         })
-    ipc.on('mountUSB',          () => {     sendMainWindow.send("quest.MountUSB", filesPath.toString()) })
+    ipc.on('mountUSB',          () => {     sendMainWindow.send("quest.MountUSB") })
 
     // btnWindow
     ipc.on('miniApp',           ()  => {    mainWindow.minimize();  })
@@ -140,7 +140,7 @@ const createMainWindow = function() {
                                                     return e;
                                                 }
                                                 sendMainWindow              .send           ("term.inData", `${termLine}>>> Start Building... <<<\n`)
-                                                sendMainWindow              .send           ("build.buildInstallEnv", buildPath.toString(), filesPath.toString())
+                                                sendMainWindow              .send           ("build.buildInstallEnv")
                                             })
                                         })
 
