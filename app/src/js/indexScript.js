@@ -6,7 +6,7 @@
 //
 //
 
-const { ipcRenderer }   = require('electron');
+const { ipcRenderer, shell }   = require('electron');
 const { Terminal }      = require('xterm');
 const { FitAddon }      = require('xterm-addon-fit');
 const { execSync }      = require('child_process');
@@ -24,6 +24,7 @@ const term              = new Terminal({
                                 });
 
 let crea = null
+let filesPath, fPathTMP, buildPath;
 
 
 //
@@ -40,6 +41,7 @@ btnPin              .addEventListener   ('click', () => {
                                             btnPin.classList.toggle("bar-extra-pin-active");
                                             ipc.send('pinApp');
                                         })
+btnMenu             .addEventListener   ('click', () => { document.querySelector("dialog").showModal(); })
 
 // btnWindow
 btnMin              .addEventListener   ('click', () => { ipc.send('miniApp')                           })
@@ -50,7 +52,10 @@ openEnvAPK          .addEventListener   ('click', () => { ipc.send('openEnvAPK')
 insllAfConver       .addEventListener   ('click', () => { toggleCheck(insllAfConver, insllAfBuild);     })
 btnPano             .addEventListener   ('click', () => { ipc.send('panoWin')                           })
 
-// BuildButtons
+// btnQuest
+btnDrive            .addEventListener   ('click', () => { ipc.send('mountUSB')                          })
+
+// btnBuild
 buildInstallEnv     .addEventListener   ('click', () => { ipc.send('buildInstallEnv')                   })
 insllAfBuild        .addEventListener   ('click', () => { toggleCheck(insllAfBuild, insllAfConver);     })
 openBuildFolder     .addEventListener   ('click', () => { ipc.send('openBuildFolder')                   })
@@ -72,7 +77,11 @@ ipc.on("term.inData", (e, d) => {
 // })
 
 // Build
-ipc.on("build.buildInstallEnv", async (e, buildPath, filesPath) => {
+ipc.on("build.buildInstallEnv", async (e, b, f) => {
+    filesPath               = f
+    fPathTMP                = path.join(filesPath, 'tmp')
+    buildPath               = b
+
     const fFormat           =   ['.jpg', '.jpeg', '.png', '.bmp']
     const fK                =   '.ktx'
 
@@ -117,7 +126,7 @@ ipc.on("build.buildInstallEnv", async (e, buildPath, filesPath) => {
                 })
             })
         } catch(err) {
-            term.writeln(`\n::: ERROR :::\nAn error occurred: ${err}`)
+            term.writeln(`\n::: ERROR :::\nAn error occurred:\n ${err}`)
             return;
         }
     }
@@ -136,7 +145,7 @@ ipc.on("build.buildInstallEnv", async (e, buildPath, filesPath) => {
         return;
     }
 
-    weit3(filesPath);
+    weit3();
 })
 
 
@@ -148,9 +157,27 @@ ipc.on("build.buildInstallEnv", async (e, buildPath, filesPath) => {
 //
 //
 
-function weit3(filesPath) {
+ipc.on("quest.MountUSB", (e, filesPath) => {
+    try {
+        const command       = `"${path.join(filesPath, "adb.exe")}" shell svc usb setFunctions mtp true`;
+
+        execSync            (command)
+
+        shell               .beep()
+        document.querySelector('#status_id').classList.add('questConnected_id')
+        document.querySelector('#status').classList.add('questConnected_txt')
+        document.querySelector('#status').textContent = "Connected"
+        document.querySelector('#btnDrive').classList.add('questConnected_txt')
+        term.write('>>> Quest mounted as drive <<<\n')
+    } catch(err) {
+        term.writeln(`\n::: ERROR :::\n ${err}`)
+        return;
+    }
+})
+
+
+function weit3() {
     // TODO: define aud variable
-    const fPathTMP      = path.join(filesPath, 'tmp')
     const label9        = document.querySelector("Audiotxt")
     const check1        = document.querySelector("#DecraseVolume")
     const check2        = document.querySelector("#AudioDefault")
@@ -162,52 +189,62 @@ function weit3(filesPath) {
         switch(true) {
             case crea               === 2:
             case check3             .checked:
-                    fs.copyFile     (path.join(filesPath, "silent.ogg"),    path.join(fPathTMP, "_BACKGROUND_LOOP.ogg"),    (err) => { if (err) throw err })
-                    tell            (filesPath, fPathTMP)
-                break;
+                                                                                fs.copyFile     (path.join(filesPath, "silent.ogg"),    path.join(fPathTMP, "_BACKGROUND_LOOP.ogg"),    (err) => { if (err) throw err })
+                                                                                tell            ()
+                                                                                break;
             case check2             .checked:
-                    fs.copyFile     (path.join(filesPath, "default.ogg"),   path.join(fPathTMP, "_BACKGROUND_LOOP.ogg"),    (err) => { if (err) throw err })
-                    tell            (filesPath, fPathTMP)
-                break;
+                                                                                fs.copyFile     (path.join(filesPath, "default.ogg"),   path.join(fPathTMP, "_BACKGROUND_LOOP.ogg"),    (err) => { if (err) throw err })
+                                                                                tell            ()
+                                                                                break;
             case label9.value.slice(-3).toLowerCase() === "ogg"     &&
                 !check4             .checked                        &&
                 !check1             .checked:
-                    fs.copyFile     (aud,                                   path.join(fPathTMP, "_BACKGROUND_LOOP.ogg"),    (err) => { if (err) throw err })
-                    tell            (filesPath, fPathTMP)
-                break;
-            default: break;
+                                                                                fs.copyFile     (aud,                                   path.join(fPathTMP, "_BACKGROUND_LOOP.ogg"),    (err) => { if (err) throw err })
+                                                                                tell            ()
+                                                                                break;
+            default:                                                            break;
         }
-        if (label9.value && !check3.checked && !check2.checked)             { killer(filesPath); }
+        if (label9.value && !check3.checked && !check2.checked)             { killer            (); }
         else                                                                {
                                                                                 term            .writeln(` \n\nEncode Audio File...\n`)
                                                                                 const command = (check1.checked) ?  `${path.join(filesPath,"sox.exe")} -S "${aud}" -C 3 "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}" vol -${lvButtons_H.options[lvButtons_H.selectedIndex].value} dB` :
                                                                                                                     `${path.join(filesPath,"sox.exe")} -S "${aud}" -C 3 "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`;
                                                                                 execSync        (command);
 
-                                                                                killer          (filesPath);
+                                                                                killer          ();
                                                                             }
     } catch (err) {
-        term.writeln(`\n::: ERROR :::\nAn error occurred: ${err}`)
+        term.writeln(`\n::: ERROR :::\nAn error occurred:\n ${err}`)
         return;
     }
 }
 
 
-function killer(filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', 'scene.zip'], i = 0) {
+function killer(fPath = filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', 'scene.zip'], i = 0) {
     fFiles.forEach(f =>             {
-                                        if (fs.existsSync(path.join(filesPath, f))) {
-                                            fs.unlinkSync(path.join(filesPath, f))
+                                        if (fs.existsSync(path.join(fPath, f))) {
+                                            fs.unlinkSync(path.join(fPath, f))
                                         }
                                     })
 
     if (i > 0)                      { return }
     else                            { killer(path.join(filesPath, 'tmp'), [...fFiles, 'temp_ec.wav'], 1) }
 
-    tell(filesPath, path.join(filesPath, 'tmp'))
+    tell()
 }
 
 
-function tell(filesPath, fPathTMP) {
+function tell() {
+    // TODO: Complete tell function
+    try {
+        const command       = `${path.join(filesPath,"7za.exe")} a "${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}" "${path.join(buildPath, "\*")}"`;
+
+        executionAsyncId(command)
+        // execSync            (command);
+    } catch (err) {
+        term.writeln(`\n::: ERROR :::\nAn error occurred:\n ${err}`)
+        return;
+    }
     // TODO: Tell
     return;
 }

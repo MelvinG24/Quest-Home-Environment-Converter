@@ -1,3 +1,5 @@
-FILES := $(shell echo npm run start)
-all:
-	@ $(FILES)
+all: buildApp
+buildApp:
+	@ npm run start
+compile:
+	@ npm run compile
