@@ -23,11 +23,13 @@ const term              = new Terminal({
                                     rows:           1
                                 });
 
+// App Dir
 const appRoot           = __dirname.slice(0, -4)
 const buildPath         = path.join(appRoot, "Build")
 const filesPath         = path.join(appRoot, "files")
 const fPathTMP          = path.join(filesPath, "tmp")
 
+// Element variables
 const modalHelp         = document.querySelector("#modal-help")
 
 let crea = null
@@ -41,32 +43,35 @@ let crea = null
 //
 //
 
-// btnExtras
-btnPin              .addEventListener   ('click', () => {
+// Extras btns Area
+btnPin              .addEventListener   ('click',   () => {
                                             document.querySelector('body').classList.toggle("bodyOnTop");
                                             btnPin.classList.toggle("bar-extra-pin-active");
                                             ipc.send('pinApp');
                                         })
-btnHelp             .addEventListener   ('click', () => { modalHelp.showModal()                                 })
-btnMenu             .addEventListener   ('click', () => { document.querySelector("#modal-menu").showModal();    })
+btnHelp             .addEventListener   ('click',   () => { modalHelp.showModal()                                   })
+btnMenu             .addEventListener   ('click',   () => { document.querySelector("#modal-menu").showModal();      })
 
-// btnWindow
-btnMin              .addEventListener   ('click', () => { ipc.send('miniApp')                                   })
-btnClose            .addEventListener   ('click', () => { ipc.send('closeApp')                                  })
+// Window btns Area     
+btnMin              .addEventListener   ('click',   () => { ipc.send('miniApp')                                     })
+btnClose            .addEventListener   ('click',   () => { ipc.send('closeApp')                                    })
 
-// btnAside     
-openEnvAPK          .addEventListener   ('click', () => { ipc.send('openEnvAPK')                                })
-insllAfConver       .addEventListener   ('click', () => { toggleCheck(insllAfConver, insllAfBuild);             })
-btnPano             .addEventListener   ('click', () => { ipc.send('panoWin')                                   })
+// Aside btns Area      
+openEnvAPK          .addEventListener   ('click',   () => { ipc.send('openEnvAPK')                                  })
+insllAfConver       .addEventListener   ('click',   () => { toggleCheck(insllAfConver, insllAfBuild);               })
+btnPano             .addEventListener   ('click',   () => { ipc.send('panoWin')                                     })
 
-// btnQuest     
-btnDrive            .addEventListener   ('click', () => { ipc.send('mountUSB')                                  })
+// Quest btns Area  
+btnDrive            .addEventListener   ('click',   () => { ipc.send('mountUSB')                                    })
 
-// btnBuild
-buildInstallEnv     .addEventListener   ('click', () => { ipc.send('buildInstallEnv')                           })
-insllAfBuild        .addEventListener   ('click', () => { toggleCheck(insllAfBuild, insllAfConver);             })
-openBuildFolder     .addEventListener   ('click', () => { ipc.send('openBuildFolder')                           })
-deleteFilesBuild    .addEventListener   ('click', () => { ipc.send('deleteFilesBuild')                          })
+// Package txt Area
+txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimit(e)                                     })
+
+// Build btns Area
+buildInstallEnv     .addEventListener   ('click',   () => { ipc.send('buildInstallEnv')                             })
+insllAfBuild        .addEventListener   ('click',   () => { toggleCheck(insllAfBuild, insllAfConver);               })
+openBuildFolder     .addEventListener   ('click',   () => { ipc.send('openBuildFolder')                             })
+deleteFilesBuild    .addEventListener   ('click',   () => { ipc.send('deleteFilesBuild')                            })
 
 
 // Terminal
@@ -174,6 +179,7 @@ modalHelp.addEventListener('close', () => {
     }
 })
 
+
 ipc.on("quest.MountUSB", () => {
     try {
         const command       = `"${path.join(filesPath, "adb.exe")}" shell svc usb setFunctions mtp true`;
@@ -195,6 +201,23 @@ ipc.on("quest.MountUSB", () => {
         return;
     }
 })
+
+
+function packageTXTLimit(e) {
+    const key   = e.keyCode
+
+    if (txtPackage.value.length <= 16) {
+        if (key === 8   ||
+            key === 46  ||
+            key === 88  &&
+            e.ctrlKey) {
+                e.preventDefault()
+        }
+    }
+    if (txtPackage.selectionStart <= 16){
+        txtPackage.setSelectionRange(16, txtPackage.selectionEnd)
+    }
+}
 
 
 function weit3() {
