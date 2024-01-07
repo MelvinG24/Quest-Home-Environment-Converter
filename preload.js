@@ -4,6 +4,12 @@ const ipc               = ipcRenderer
 window.addEventListener('DOMContentLoaded', () => {
     const dropZone  = document.querySelector("#drop");
     const cmb       = document.querySelector("#DVComboBox");
+    const inputs    = document.querySelectorAll("input");
+
+    // Prevent Spellcheck
+    inputs.forEach(e => {
+        e.setAttribute('spellcheck', false)
+    })
 
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((e) => {
