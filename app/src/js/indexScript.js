@@ -62,8 +62,8 @@ insllAfConver       .addEventListener   ('click',   () => { toggleCheck(insllAfC
 btnPano             .addEventListener   ('click',   () => { ipc.send('panoWin')                                     })
 
 // Quest btns Area  
-btnDrive            .addEventListener   ('click',   () => { ipc.send('mountUSB')                                    })
-
+btnDrive            .addEventListener   ('click',   () => { questMountUSB()                                         })
+btnSet720           .addEventListener   ('click',   () => { questSet720()                                           })
 // Package txt Area
 txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimit(e)                                     })
 
@@ -88,7 +88,56 @@ ipc.on("term.inData", (e, d) => {
 //     ipc.send("term.outData", e)
 // })
 
-// Build
+
+//
+//
+// ***************************************************
+// Functions
+// ***************************************************
+//
+//
+
+// Quest fuctions
+function questMountUSB() {
+    try {
+        const command       = `"${path.join(filesPath, "adb.exe")}" shell svc usb setFunctions mtp true`;
+
+        execSync            (command)
+
+        shell               .beep                                   ()
+        document            .querySelector('#status_id')            .classList.add('questConnected_id')
+        document            .querySelector('#status')               .classList.add('questConnected_txt')
+        document            .querySelector('#btnDrive')             .classList.add('questConnected_txt')
+        document            .querySelector('#status')               .textContent = "Connected"
+        term                .write                                  ('>>> Quest mounted as drive <<<\n')
+    } catch(err) {
+        document            .querySelector('#status_id')            .classList.remove('questConnected_id')
+        document            .querySelector('#status')               .classList.remove('questConnected_txt')
+        document            .querySelector('#btnDrive')             .classList.remove('questConnected_txt')
+        document            .querySelector('#status')               .textContent = "Disconnected"
+        term.writeln(`\n::: ERROR :::\n ${err}`)
+        return;
+    }
+}
+
+function questSet720() {
+    try {
+        const commandW      = `${path.join(filesPath, "adb.exe")} shell setprop debug.oculus.capture.width 1280`
+        const commandH      = `${path.join(filesPath, "adb.exe")} shell setprop debug.oculus.capture.height 720`
+
+        execSync            (commandW)
+        execSync            (commandH)
+
+        shell               .beep                                   ()
+        term                .write                                  ('>>> Recording video size set to 720p (1280x720) <<<\n')
+    } catch(err) {
+        term.writeln(`\n::: ERROR :::\n ${err}`)
+        return;
+    }
+}
+
+
+// Build functions
 ipc.on("build.buildInstallEnv", async () => {
     const fFormat           =   ['.jpg', '.jpeg', '.png', '.bmp']
     const fK                =   '.ktx'
@@ -155,69 +204,6 @@ ipc.on("build.buildInstallEnv", async () => {
 
     weit3();
 })
-
-
-//
-//
-// ***************************************************
-// Functions
-// ***************************************************
-//
-//
-
-modalHelp.addEventListener('close', () => {
-    // TODO: Open on Web-browser not on electron
-    switch(modalHelp.returnValue) {
-        case "web":
-            open("https://documentcloud.adobe.com/link/track?uri=urn:aaid:scds:US:378deebf-9e73-4100-bdb1-40b816baef58");
-            break;
-        case "pdf":
-            open(appRoot + "\\EnviromentConverterBuilder_HowTo.pdf");
-            break;
-        default:
-            break;
-    }
-})
-
-
-ipc.on("quest.MountUSB", () => {
-    try {
-        const command       = `"${path.join(filesPath, "adb.exe")}" shell svc usb setFunctions mtp true`;
-
-        execSync            (command)
-
-        shell               .beep                                   ()
-        document            .querySelector('#status_id')            .classList.add('questConnected_id')
-        document            .querySelector('#status')               .classList.add('questConnected_txt')
-        document            .querySelector('#btnDrive')             .classList.add('questConnected_txt')
-        document            .querySelector('#status')               .textContent = "Connected"
-        term                .write                                  ('>>> Quest mounted as drive <<<\n')
-    } catch(err) {
-        document            .querySelector('#status_id')            .classList.remove('questConnected_id')
-        document            .querySelector('#status')               .classList.remove('questConnected_txt')
-        document            .querySelector('#btnDrive')             .classList.remove('questConnected_txt')
-        document            .querySelector('#status')               .textContent = "Disconnected"
-        term.writeln(`\n::: ERROR :::\n ${err}`)
-        return;
-    }
-})
-
-
-function packageTXTLimit(e) {
-    const key   = e.keyCode
-
-    if (txtPackage.value.length <= 16) {
-        if (key === 8   ||
-            key === 46  ||
-            key === 88  &&
-            e.ctrlKey) {
-                e.preventDefault()
-        }
-    }
-    if (txtPackage.selectionStart <= 16){
-        txtPackage.setSelectionRange(16, txtPackage.selectionEnd)
-    }
-}
 
 
 function weit3() {
@@ -302,6 +288,36 @@ function tell() {
 //
 //
 
+function packageTXTLimit(e) {
+    const key   = e.keyCode
+
+    if (txtPackage.value.length <= 16) {
+        if (key === 8   ||
+            key === 46  ||
+            key === 88  &&
+            e.ctrlKey) {
+                e.preventDefault()
+        }
+    }
+    if (txtPackage.selectionStart <= 16){
+        txtPackage.setSelectionRange(16, txtPackage.selectionEnd)
+    }
+}
+
 ipc.on ("modal.toggle", (e, b) =>       { document.querySelector('#modalBlock').classList.toggle('toggleDisplay', b)   })
 
 function toggleCheck(e, d)              { d.checked = e.checked }
+
+modalHelp.addEventListener('close', () => {
+    // TODO: Open on Web-browser not on electron
+    switch(modalHelp.returnValue) {
+        case "web":
+            open("https://documentcloud.adobe.com/link/track?uri=urn:aaid:scds:US:378deebf-9e73-4100-bdb1-40b816baef58");
+            break;
+        case "pdf":
+            open(appRoot + "\\EnviromentConverterBuilder_HowTo.pdf");
+            break;
+        default:
+            break;
+    }
+})

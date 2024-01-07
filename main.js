@@ -74,7 +74,6 @@ const createMainWindow = function() {
                                             const onTop = mainWindow.isAlwaysOnTop();
                                             mainWindow.setAlwaysOnTop(!onTop);
                                         })
-    ipc.on('mountUSB',          () => {     sendMainWindow.send("quest.MountUSB") })
 
     // btnWindow
     ipc.on('miniApp',           ()  => {    mainWindow.minimize();  })
