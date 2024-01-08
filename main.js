@@ -103,6 +103,19 @@ const createMainWindow = function() {
                                             createPanoWindow();
                                         })
 
+    // Quest
+    ipc.handle('quest.saveLastVideo',
+            async (e, videoExtract) => {
+                                            return dialog.showSaveDialogSync(mainWindow, {
+                                                title: "Save Oculus Video file as...",
+                                                defaultPath: `${path.join(__dirname, videoExtract)}`,
+                                                filters: [
+                                                    { name: 'MP4 Files', extensions: ['mp4'] },
+                                                    { name: 'All Files', extensions: ['*'] }
+                                                ]
+                                            })
+                                        })
+
     // BuildButtons
     ipc.on('buildInstallEnv',   ()  => {
                                             fs.readdir(buildPath, (err, files) => {

@@ -6,16 +6,20 @@
 //
 //
 
-const { ipcRenderer, shell }   = require('electron');
-const { Terminal }      = require('xterm');
-const { FitAddon }      = require('xterm-addon-fit');
-const { execSync }      = require('child_process');
-const fs                = require('fs');
-const path              = require('path');
+const {
+    ipcRenderer,
+    shell
+} = require('electron');
 
-const ipc               = ipcRenderer
-const fitAddon          = new FitAddon()
-const term              = new Terminal({
+const   { Terminal }    = require('xterm');
+const   { FitAddon }    = require('xterm-addon-fit');
+const   { execSync }    = require('child_process');
+const   fs              = require('fs');
+const   path            = require('path');
+
+const   ipc             = ipcRenderer
+const   fitAddon        = new FitAddon()
+const   term            = new Terminal({
                                     theme: { foreground: '#00FF00' },
                                     cursorBlink:    false,
                                     convertEol:     true,
@@ -24,16 +28,14 @@ const term              = new Terminal({
                                 });
 
 // App Dir
-const appRoot           = __dirname.slice(0, -4)
-const buildPath         = path.join(appRoot, "Build")
-const filesPath         = path.join(appRoot, "files")
-const fPathTMP          = path.join(filesPath, "tmp")
+const   appRoot         = __dirname.slice(0, -4)
+const   buildPath       = path.join(appRoot, "Build")
+const   filesPath       = path.join(appRoot, "files")
+const   fPathTMP        = path.join(filesPath, "tmp")
 
 // Element variables
-const modalHelp         = document.querySelector("#modal-help")
-
-let crea = null
-
+const   modalHelp       = document.querySelector("#modal-help")
+let     crea            = null
 
 //
 //
@@ -64,6 +66,8 @@ btnPano             .addEventListener   ('click',   () => { ipc.send('panoWin') 
 // Quest btns Area  
 btnDrive            .addEventListener   ('click',   () => { questMountUSB()                                         })
 btnSet720           .addEventListener   ('click',   () => { questSet720()                                           })
+btnSaveLastVideo    .addEventListener   ('click',   () => { saveLastVideo()                                         })
+
 // Package txt Area
 txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimit(e)                                     })
 
@@ -105,25 +109,19 @@ function questMountUSB() {
         execSync            (command)
 
         shell               .beep                                   ()
-        document            .querySelector('#status_id')            .classList.add('questConnected_id')
-        document            .querySelector('#status')               .classList.add('questConnected_txt')
-        document            .querySelector('#btnDrive')             .classList.add('questConnected_txt')
-        document            .querySelector('#status')               .textContent = "Connected"
+        addClassConnection  ('#btnDrive')
         term                .write                                  ('>>> Quest mounted as drive <<<\n')
     } catch(err) {
-        document            .querySelector('#status_id')            .classList.remove('questConnected_id')
-        document            .querySelector('#status')               .classList.remove('questConnected_txt')
-        document            .querySelector('#btnDrive')             .classList.remove('questConnected_txt')
-        document            .querySelector('#status')               .textContent = "Disconnected"
-        term.writeln(`\n::: ERROR :::\n ${err}`)
+        removeClassConnection('#btnDrive')
+        term.writeln(`\n::: ERROR :::\n ${err}\n------\n`)
         return;
     }
 }
 
 function questSet720() {
     try {
-        const commandW      = `${path.join(filesPath, "adb.exe")} shell setprop debug.oculus.capture.width 1280`
-        const commandH      = `${path.join(filesPath, "adb.exe")} shell setprop debug.oculus.capture.height 720`
+        const commandW      = `"${path.join(filesPath, "adb.exe")}" shell setprop debug.oculus.capture.width 1280`
+        const commandH      = `"${path.join(filesPath, "adb.exe")}" shell setprop debug.oculus.capture.height 720`
 
         execSync            (commandW)
         execSync            (commandH)
@@ -131,6 +129,24 @@ function questSet720() {
         shell               .beep                                   ()
         term                .write                                  ('>>> Recording video size set to 720p (1280x720) <<<\n')
     } catch(err) {
+        term.writeln(`\n::: ERROR :::\n ${err}`)
+        return;
+    }
+}
+
+async function saveLastVideo() {
+    try {
+        let     videoExtract    = execSync(`"${path.join(filesPath, "adb.exe")}" shell ls -lt /sdcard/Oculus/VideoShots`, {encoding: 'utf-8', stdio: 'pipe' })                              // get list of videos as one long string
+        const   videosArray     = videoExtract.split('\n')                                                                                                                                  // create an array from the string
+
+        if (videosArray[1] === "") throw videosArray[1];
+
+        videoExtract            = videosArray[1].substring(videosArray[1].indexOf("com.oculus.shellenv"), videosArray[1].length - videosArray[1].indexOf("com.oculus.vrshell") + 1);        // get last video name from array
+        console.log(videoExtract)
+        const   dirSave         = await ipc.invoke("quest.saveLastVideo", videoExtract.slice(0, -5))
+        console.log("return of dirSave: ", dirSave)
+        execSync(`"${path.join(filesPath, "adb.exe")}" pull "/sdcard/Oculus/VideoShots/${videoExtract}" "${dirSave}"`)                                                   // extract video from Oculus
+    } catch (err) {
         term.writeln(`\n::: ERROR :::\n ${err}`)
         return;
     }
@@ -161,7 +177,7 @@ ipc.on("build.buildInstallEnv", async () => {
                         term                .writeln(`Compress Texture File: ${fPath}`);
 
                         const fName         = path.basename(fPath, fExt);
-                        const command       = `${path.join(filesPath,"img2ktx.exe")} -o "${path.join(buildPath, fName)}.ktx" -m -f ASTC8x8 "${fPath}"`;
+                        const command       = `"${path.join(filesPath,"img2ktx.exe")}" -o "${path.join(buildPath, fName)}.ktx" -m -f ASTC8x8 "${fPath}"`;
 
                         execSync            (command);
                         fs                  .unlinkSync(fPath);
@@ -197,8 +213,8 @@ ipc.on("build.buildInstallEnv", async () => {
                                 })
 
     if (checkBuildPath) {
-        ipc.invoke              ("dialog.showDialog", "Error", ".JPG/.PNG and .KTX present in same folder!");
-        term.writeln            (".JPG/.PNG and .KTX present in same folder!\n")
+        ipc.invoke              ("dialog.showDialog", "Error", ".JPG/.PNG and .KTX present in same videosLister!");
+        term.writeln            (".JPG/.PNG and .KTX present in same videosLister!\n")
         return;
     }
 
@@ -237,8 +253,8 @@ function weit3() {
         if (label9.value && !check3.checked && !check2.checked)             { killer            (); }
         else                                                                {
                                                                                 term            .writeln(` \n\nEncode Audio File...\n`)
-                                                                                const command = (check1.checked) ?  `${path.join(filesPath,"sox.exe")} -S "${aud}" -C 3 "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}" vol -${lvButtons_H.options[lvButtons_H.selectedIndex].value} dB` :
-                                                                                                                    `${path.join(filesPath,"sox.exe")} -S "${aud}" -C 3 "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`;
+                                                                                const command = (check1.checked) ?  `"${path.join(filesPath,"sox.exe")}" -S "${aud}" -C 3 "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}" vol -${lvButtons_H.options[lvButtons_H.selectedIndex].value} dB` :
+                                                                                                                    `"${path.join(filesPath,"sox.exe")}" -S "${aud}" -C 3 "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`;
                                                                                 execSync        (command);
 
                                                                                 killer          ();
@@ -267,10 +283,9 @@ function killer(fPath = filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', '
 function tell() {
     // TODO: Complete tell function
     try {
-        const command       = `${path.join(filesPath,"7za.exe")} a "${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}" "${path.join(buildPath, "\*")}"`;
+        const command       = `"${path.join(filesPath,"7za.exe")}" a "${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}" "${path.join(buildPath, "\*")}"`;
 
-        executionAsyncId(command)
-        // execSync            (command);
+        execSync            (command);
     } catch (err) {
         term.writeln(`\n::: ERROR :::\nAn error occurred:\n ${err}`)
         return;
@@ -287,6 +302,20 @@ function tell() {
 // ***************************************************
 //
 //
+
+function addClassConnection(d) {
+    document            .querySelector('#status_id')            .classList.add('questConnected_id')
+    document            .querySelector('#status')               .classList.add('questConnected_txt')
+    document            .querySelector(d)                       .classList.add('questConnected_txt')
+    document            .querySelector('#status')               .textContent = "Connected"
+}
+
+function removeClassConnection(d) {
+    document            .querySelector('#status_id')            .classList.remove('questConnected_id')
+    document            .querySelector('#status')               .classList.remove('questConnected_txt')
+    document            .querySelector(d)                       .classList.remove('questConnected_txt')
+    document            .querySelector('#status')               .textContent = "Disconnected"
+}
 
 function packageTXTLimit(e) {
     const key   = e.keyCode

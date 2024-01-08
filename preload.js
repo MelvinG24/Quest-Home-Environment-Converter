@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Prevent Spellcheck
     inputs.forEach(e => {
         e.setAttribute('spellcheck', false)
-    })
+    });
 
     // Prevent default drag behaviors
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((e) => {
