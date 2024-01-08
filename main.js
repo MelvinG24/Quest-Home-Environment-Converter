@@ -62,12 +62,13 @@ const createMainWindow = function() {
     sendMainWindow = mainWindow.webContents
 
     // extra_functions
-    ipc.handle('dialog.showDialog', (e, t, m) => {
-        dialog.showMessageBox(mainWindow, {
-            title: t,
-            message: m,
-        })
-    })
+    ipc.handle('dialog.showDialog',
+                          (e, t, m) => {
+                                            dialog.showMessageBox(mainWindow, {
+                                                title: t,
+                                                message: m,
+                                            })
+                                        })
 
     // btnExtras
     ipc.on('pinApp',            ()  => {
@@ -80,7 +81,8 @@ const createMainWindow = function() {
     ipc.on('closeApp',          ()  => {    mainWindow.close();     })
 
     // btnAside
-    ipc.on('fileDropped',       (e, f, p, t) => {
+    ipc.on('fileDropped',
+                       (e, f, p, t) => {
                                             if (checkFileWin(t)) {
                                                 sendMainWindow              .send("term.inData", 
                                                     `File Dropped: \n name: ${f.toString()} \n type: ${t.toString()} \n path: ${p.toString()}\n`)
@@ -178,6 +180,12 @@ const createMainWindow = function() {
                                         })
 
     // Terminal
+
+    // Loading Ready
+    mainWindow.webContents.on('did-finish-load', () => {
+        const pjson = require('./package.json');
+        sendMainWindow.send('app.loaded', pjson);
+    })
 };
 
 

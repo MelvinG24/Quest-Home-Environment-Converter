@@ -352,3 +352,12 @@ modalHelp.addEventListener('close', () => {
             break;
     }
 })
+
+ipc.on('app.loaded', (e, pjson) => {
+    term.writeln(`Quest Home Environment Converter\nv${pjson.version}
+Developed by: ${pjson.author}
+Repo: https://github.com/MelvinG24/Quest-Home-Environment-Converter
+---
+This project is a fork of the original:
+Quest Home Environment Converter, By Vince Crusty`)
+})
