@@ -110,7 +110,7 @@ function questMountUSB() {
 
         shell               .beep                                   ()
         addClassConnection  ('#btnDrive')
-        term                .write                                  ('>>> Quest mounted as drive <<<\n')
+        term                .write                                  ('>>> Quest mounted as drive <<<\n\n')
     } catch(err) {
         removeClassConnection('#btnDrive')
         term.writeln(`\n::: ERROR :::\n ${err}\n------\n`)
@@ -142,12 +142,14 @@ async function saveLastVideo() {
         if (videosArray[1] === "") throw videosArray[1];
 
         videoExtract            = videosArray[1].substring(videosArray[1].indexOf("com.oculus.shellenv"), videosArray[1].length - videosArray[1].indexOf("com.oculus.vrshell") + 1);        // get last video name from array
-        console.log(videoExtract)
         const   dirSave         = await ipc.invoke("quest.saveLastVideo", videoExtract.slice(0, -5))
-        console.log("return of dirSave: ", dirSave)
-        execSync(`"${path.join(filesPath, "adb.exe")}" pull "/sdcard/Oculus/VideoShots/${videoExtract}" "${dirSave}"`)                                                   // extract video from Oculus
+
+        if (dirSave === undefined || dirSave === "") return;
+
+        execSync(`"${path.join(filesPath, "adb.exe")}" pull "/sdcard/Oculus/VideoShots/${videoExtract}" "${dirSave}"`)                                                                      // extract video from Oculus
+        term.writeln(`>>> Video Extraction Successfully <<<\n"${dirSave}"\n`)
     } catch (err) {
-        term.writeln(`\n::: ERROR :::\n ${err}`)
+        term.writeln(`\n::: ERROR :::\n ${err}\n`)
         return;
     }
 }
