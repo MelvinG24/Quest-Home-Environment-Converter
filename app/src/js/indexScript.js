@@ -36,6 +36,8 @@ const   fPathTMP        = path.join(filesPath, "tmp")
 // Element variables
 const   modalHelp       = document.querySelector("#modal-help")
 let     crea            = null
+let     apkPath         = null
+let     audPath         = null
 
 //
 //
@@ -65,8 +67,10 @@ btnPano             .addEventListener   ('click',   () => { ipc.send('panoWin') 
 
 // Quest btns Area  
 btnDrive            .addEventListener   ('click',   () => { questMountUSB()                                         })
+
 btnSet720           .addEventListener   ('click',   () => { questSet720()                                           })
 btnSaveLastVideo    .addEventListener   ('click',   () => { saveLastVideo()                                         })
+btnOnlyInstallAPK   .addEventListener   ('click',   () => { onlyInstallAPK()                                        })
 
 // Package txt Area
 txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimit(e)                                     })
@@ -150,6 +154,28 @@ async function saveLastVideo() {
         term.writeln(`>>> Video Extraction Successfully <<<\n"${dirSave}"\n`)
     } catch (err) {
         term.writeln(`\n::: ERROR :::\n ${err}\n`)
+        return;
+    }
+}
+
+function onlyInstallAPK() {
+    try {
+        showMsgStatus   ('Working')
+
+        const command   = `"${path.join(filesPath, "adb.exe")}" install -r "${apkPath}"`
+
+        term.writeln    (`>>> Try connecting to Quest for APK-Install ...`)
+
+        execSync        (command)
+
+        showMsgStatus   ('Done')
+
+        const audioDone = new Audio(`"${path.join(filesPath, gong.wav)}"`)
+        audioDone       .play()
+    } catch(err) {
+        shell           .beep()
+        showMsgStatus   ('Error')
+        term.writeln(`\n::: ERROR :::\n ${err}\nIf Quest is connected, Please remove the USB-Cable and reconnect it again.\n`)
         return;
     }
 }
@@ -319,6 +345,28 @@ function removeClassConnection(d) {
     document            .querySelector('#status')               .textContent = "Disconnected"
 }
 
+function showMsgStatus(status) {
+    const e = document.querySelector("#processStatustxt")
+
+    e.className = '';
+    switch(status) {
+        case "Working":
+            e.classList.add     ('psTXT-working')
+            e.textContent       = '...Working'
+            break;
+        default:
+            e.classList.add     (`psTXT-${status.toLowerCase()}`)
+            e.textContent       = `${status}!`
+            setInterval         (async () => {
+                                    e.className         = ''
+                                    e.classList.add     ('psTXT-inactive')
+                                    e.textContent       = 'text'
+                                }, 10000)
+            break;
+    }
+
+}
+
 function packageTXTLimit(e) {
     const key   = e.keyCode
 
@@ -354,10 +402,5 @@ modalHelp.addEventListener('close', () => {
 })
 
 ipc.on('app.loaded', (e, pjson) => {
-    term.writeln(`Quest Home Environment Converter\nv${pjson.version}
-Developed by: ${pjson.author}
-Repo: https://github.com/MelvinG24/Quest-Home-Environment-Converter
----
-This project is a fork of the original:
-Quest Home Environment Converter, By Vince Crusty`)
+    term.writeln(`Quest Home Environment Converter\nv${pjson.version}\n`)
 })
