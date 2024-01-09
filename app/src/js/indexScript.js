@@ -16,6 +16,7 @@ const   { FitAddon }    = require('xterm-addon-fit');
 const   { execSync }    = require('child_process');
 const   fs              = require('fs');
 const   path            = require('path');
+const   audioPlayer     = require('node-wav-player')
 
 const   ipc             = ipcRenderer
 const   fitAddon        = new FitAddon()
@@ -164,14 +165,15 @@ function onlyInstallAPK() {
 
         const command   = `"${path.join(filesPath, "adb.exe")}" install -r "${apkPath}"`
 
-        term.writeln    (`>>> Try connecting to Quest for APK-Install ...`)
+        term.writeln    (`>>> Try connecting to Quest for APK-Install ...\n`)
 
         execSync        (command)
 
         showMsgStatus   ('Done')
 
-        const audioDone = new Audio(`"${path.join(filesPath, gong.wav)}"`)
-        audioDone       .play()
+        audioPlayer.play({ path: path.join(filesPath, "gong.wav").toString() })
+
+        term.writeln    ('Installation Succesful!\n')
     } catch(err) {
         shell           .beep()
         showMsgStatus   ('Error')
