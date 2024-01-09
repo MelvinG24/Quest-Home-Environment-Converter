@@ -72,6 +72,7 @@ btnDrive            .addEventListener   ('click',   () => { questMountUSB()     
 btnSet720           .addEventListener   ('click',   () => { questSet720()                                           })
 btnSaveLastVideo    .addEventListener   ('click',   () => { saveLastVideo()                                         })
 btnOnlyInstallAPK   .addEventListener   ('click',   () => { onlyInstallAPK()                                        })
+btnUninstallAPK     .addEventListener   ('click',   () => { uninstallAPK()                                          })
 
 // Package txt Area
 txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimit(e)                                     })
@@ -170,14 +171,57 @@ function onlyInstallAPK() {
         execSync        (command)
 
         showMsgStatus   ('Done')
-
-        audioPlayer.play({ path: path.join(filesPath, "gong.wav").toString() })
-
+        playAudioDone   ()
         term.writeln    ('Installation Succesful!\n')
     } catch(err) {
         shell           .beep()
         showMsgStatus   ('Error')
-        term.writeln(`\n::: ERROR :::\n ${err}\nIf Quest is connected, Please remove the USB-Cable and reconnect it again.\n`)
+        term.writeln    (`\n::: ERROR :::\n ${err}\nIf Quest is connected, Please remove the USB-Cable and reconnect it again.\n`)
+        return;
+    }
+}
+
+function uninstallAPK() {
+    let pack2       = ""
+    let fileFound   = ""
+    try {
+        showMsgStatus   ("Working")
+
+        const   commandP    = `"${path.join(filesPath, "aapt.exe")}" d badging "${apkPath}"`
+                fileFound   = execSync(commandP)
+        const   fields      = fileFound.split("'")
+        for (i = 0; i < fields.length; i++) {
+            if (fields[i].trim().includes("package")) {
+                pack2 = fields[i + 1].trim();
+            }
+        }
+
+        term.writeln    (`>>> Try connecting to Quest for APK-uninstall...\n`)
+
+        const   commandF    = `"${path.join(filesPath, "adb.exe")}" uninstall "${pack2}"`
+                fileFound   = execSync(commandF)
+
+        // ff = fileFound (note)
+
+        // if (ff.includes("connect error")) ie = true;
+        // if (ff.includes("cannot Connect")) ie = true;
+        // if (ff.includes("Unknown package")) {
+        //     messageBeep(16); // You need to implement messageBeep function
+        //     message("Error: Unknown package!\nAPK already uninstalled?!"); // You need to implement message function
+        //     ie = true;
+        // }
+        // if (ff.includes("more")) {
+        //     messageBeep(16); // You need to implement messageBeep function
+        //     message("Error: USB-Cable Connected!\nPlease Remove USB-Cable!"); // You need to implement message function
+        //     ie = true;
+
+        showMsgStatus   ('Done')
+        playAudioDone   ()
+        term.writeln    ('Uninstall Succesful!\n')
+    } catch (err) {
+        shell           .beep()
+        showMsgStatus   ('Error')
+        term.writeln    (`\n::: ERROR :::\n ${err}\nIf Quest is connected, Please remove the USB-Cable and reconnect it again.\n`)
         return;
     }
 }
@@ -406,3 +450,7 @@ modalHelp.addEventListener('close', () => {
 ipc.on('app.loaded', (e, pjson) => {
     term.writeln(`Quest Home Environment Converter\nv${pjson.version}\n`)
 })
+
+function playAudioDone() {
+    audioPlayer.play({ path: path.join(filesPath, "gong.wav").toString() })
+}
