@@ -1,0 +1,5 @@
+# TODO List
+- Add take Screenshot button, to capture Oculus current view from software
+- Add record video button, to capture Oculus short-video from software
+- Add ADB device listiner, to check when Oculus get disconnect from software
+- Add manifest file maker for the APK builder, so user can define Custom Home Environment image preview to show on Oculus Apperience menu, and Author info

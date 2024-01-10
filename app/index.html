@@ -29,6 +29,29 @@
             <button type="submit" value="correct">Spaces</button>
         </form>
     </dialog>
+    <dialog id="modal-wifi">
+        <form method="dialog">
+            <h3>Connect via Wifi (Pre-Alpha)</h3>
+            <p>This is an experimental feature, and there is no guarantee this will always work on every device or not at all.</p>
+            <p>If you want to connect your device via Wifi, please follow the following steps:</p>
+            <p><ul>
+                <li>Make sure your device and computer are on the same Wifi-Network</li>
+                <li>Connect your device via USB by "mount it as drive"</li>
+                <li>Click again on Connect via Wifi button</li>
+                <li>Continue from this window to active the Wifi debugger mode on your device</li>
+                <li>Enter pairing code for confirmation</li>
+                <li>*If everything goes well, at this time, you can disconnect your device from the USB cable and click one last time connect via Wifi button to make the connection</li>
+                <li>From this moment, you won't need to mount your device as a drive again to make the wifi connection anymore</li>
+            </ul></p>
+            <p><b>Note:</b> If this method stops working, reteap the preview steps again to make the connection. Please remember this is a pre-alpha feature and is still being developed and tested.</p>
+            <div>
+                <input type="checkbox" name="checkNoAgain" id="checkNoAgain">
+                <label for="checkNoAgain">Do not show this message again</label>
+            </div>
+            <button type="submit" value="correct">Continue</button>
+            <button type="submit" value="wrong">Cancel</button>
+        </form>
+    </dialog>
     <!-- Title Bar -->
     <div id="title-bar">
         <span id="title" class="document-name">Quest Home Environment Converter</span>
@@ -54,11 +77,11 @@
                     <span>Drag/Drop an APK file here<br/>(Also an Audio file if desired)</span>
                     <img src="./src/img/dropAPKAudio.svg" alt="Drop APK and Audio files here">
                 </div>
-                <button id="openEnvAPK" class="btnSmall">Open Environment APK</button>
-                <button class="btnBig">Convert and Install New Environment</button>
+                <button id="btnOpenEnvAPK" class="btnSmall">Open Environment APK</button>
+                <button id="btnConvInstallEnv" class="btnBig">Convert and Install New Environment</button>
                 <div>
-                    <input type="checkbox" id="insllAfConver" name="installAfterConversion" value="installAfterConversion">
-                    <label for="insllAfConver">Auto Install after conversion</label>
+                    <input type="checkbox" id="btnInsllAfConver" name="installAfterConversion" value="installAfterConversion">
+                    <label for="btnInsllAfConver">Auto Install after conversion</label>
                 </div>
                 <button id="btnPano" class="btnBig">Panorama Builder</button>
             </aside>
@@ -131,28 +154,28 @@
                     <span>The Buttons on the right area only for environment creator! --&gt;</span>
                     <div>
                         <div>
-                            <button id="buildInstallEnv" class="btnBig">Build and Install Environment</button>
+                            <button id="btnBuildInstallEnv" class="btnBig">Build and Install Environment</button>
                             <div>
-                                <input type="checkbox" id="insllAfBuild" name="installAfterBuild" value="installAfterBuild">
-                                <label for="insllAfBuild">Auto Install after build</label>
+                                <input type="checkbox" id="chckInsllAfBuild" name="installAfterBuild" value="installAfterBuild">
+                                <label for="chckInsllAfBuild">Auto Install after build</label>
                             </div>
-                            <button class="btnSmall">Unpack APK to ..\Build</button>
+                            <button id="btnUnpackAPK" class="btnSmall">Unpack APK to ..\Build</button>
                         </div>
                         <div>
-                            <button id="openBuildFolder" class="btnBig">Open Build Folder</button>
+                            <button id="btnOpenBuildFolder" class="btnBig">Open Build Folder</button>
                             <div>
-                                <input type="checkbox" id="KTXcompress" name="compress-ktx" value="compress-ktx">
-                                <label for="KTXcompress">Compress to KTX</label>
+                                <input type="checkbox" id="chckKTXcompress" name="compress-ktx" value="compress-ktx">
+                                <label for="chckKTXcompress">Compress to KTX</label>
                             </div>
-                            <button class="btnSmall">KTX to PNG Convert</button>
+                            <button id="btnKTXtoPNG" class="btnSmall">KTX to PNG Convert</button>
                         </div>
                         <div>
-                            <button class="btnBig">Create 2 releases with and without audio</button>
+                            <button id="btnRelAudioNoAudio" class="btnBig">Create 2 releases with and without audio</button>
                             <div>
                                 <input type="checkbox" id="installBuild" name="installBuild" value="installBuild">
                                 <label for="installBuild">Auto Build and Install</label>
                             </div>
-                            <button id="deleteFilesBuild" class="btnSmall">Delete all files in build</button>
+                            <button id="btnDeleteFilesBuild" class="btnSmall">Delete all files in build</button>
                         </div>
                     </div>
                 </div>

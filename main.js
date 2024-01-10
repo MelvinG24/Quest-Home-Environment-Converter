@@ -91,14 +91,14 @@ const createMainWindow = function() {
                                                 sendMainWindow              .send("term.inData", `Unsupported file format: ${t}\n`)
                                             }
                                         })
-    ipc.on('openEnvAPK',        ()  => {
-                                            console.log(dialog.showOpenDialog(mainWindow, {
+    ipc.handle('openEnvAPK',    ()  => {
+                                            return dialog.showOpenDialog(mainWindow, {
                                                 title: "Open APK Environment file",
                                                 properties: ["openFile"],
                                                 filters: [
                                                     {name: 'APK file', extensions: ["apk"]}
                                                 ]
-                                            }))
+                                            })
                                         })
     ipc.on('panoWin',           ()  => {
                                             sendMainWindow              .send("modal.toggle", true);
