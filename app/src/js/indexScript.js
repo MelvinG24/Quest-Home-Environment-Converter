@@ -16,7 +16,7 @@ const   { FitAddon }    = require('xterm-addon-fit');
 const   { execSync }    = require('child_process');
 const   fs              = require('fs');
 const   path            = require('path');
-const   audioPlayer     = require('node-wav-player')
+const   audioPlayer     = require('node-wav-player');
 
 const   ipc             = ipcRenderer
 const   fitAddon        = new FitAddon()

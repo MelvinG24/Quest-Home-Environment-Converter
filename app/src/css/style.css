@@ -73,6 +73,34 @@ img {
     -webkit-user-drag: none;
 }
 
+/* [data-tooltip] {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
+[data-tooltip]::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    display: none;
+    min-width: 250px;
+    top: 100%;
+    background-color: #f2f3f4;
+    color: black;
+    padding: 5px 0;
+    border-radius: 6px;
+    transform: translateY(20%);
+    font-size: small;
+    z-index: 9999;
+}
+[data-tooltip]:hover::before {
+    display: block;
+    animation: fadeInOut 1s linear forwards;
+}
+@keyframes fadeInOut {
+    0%      { opacity: 0; }
+    100%    { opacity: 1; }
+} */
+
 .bodyOnTop {
     box-shadow: inset var(--color_red_dark) 0 0 0 4px;
     border-radius: var(--radius);

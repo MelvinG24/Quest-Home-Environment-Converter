@@ -77,13 +77,13 @@
                     <span>Drag/Drop an APK file here<br/>(Also an Audio file if desired)</span>
                     <img src="./src/img/dropAPKAudio.svg" alt="Drop APK and Audio files here">
                 </div>
-                <button id="btnOpenEnvAPK" class="btnSmall">Open Environment APK</button>
-                <button id="btnConvInstallEnv" class="btnBig">Convert and Install New Environment</button>
-                <div>
+                <button id="btnOpenEnvAPK" class="btnSmall"     title="Put your model-files in folder .\Build">Open Environment APK</button>
+                <button id="btnConvInstallEnv" class="btnBig"   title="Put your model-files in folder .\Build">Convert and Install New Environment</button>
+                <div title="Install APK after build">
                     <input type="checkbox" id="btnInsllAfConver" name="installAfterConversion" value="installAfterConversion">
                     <label for="btnInsllAfConver">Auto Install after conversion</label>
                 </div>
-                <button id="btnPano" class="btnBig">Panorama Builder</button>
+                <button id="btnPano" class="btnBig" title="Start Converter">Panorama Builder</button>
             </aside>
             <section>
                 <!-- Quest -->
@@ -99,12 +99,12 @@
                     </div>
                     <div id="quest_settings">
                         <div id="btnDrive"  class="bar-extra bar-extra-drive"       title="Mount Quest as Drive"></div>
-                        <div id="btnWifi"   class="bar-extra bar-extra-wifi"        title="Connect via Wifi"></div>
+                        <div id="btnWifi"   class="bar-extra bar-extra-wifi"        title="Connect Quest via Wifi"></div>
                         <div>
-                            <button id="btnSet720"          class="btnSmall">Set capture size to 720p</button>
-                            <button id="btnSaveLastVideo"   class="btnSmall">Save last Quest video to PC</button>
-                            <button id="btnOnlyInstallAPK"  class="btnSmall">Only install APK</button>
-                            <button id="btnUninstallAPK"    class="btnSmall">Uninstall APK</button>
+                            <button id="btnSet720"          class="btnSmall"        title="Set Recording Video size to 720p">Set capture size to 720p</button>
+                            <button id="btnSaveLastVideo"   class="btnSmall"        title="Save last video on from you Quest to your PC">Save last Quest video to PC</button>
+                            <button id="btnOnlyInstallAPK"  class="btnSmall"        title="Install a selected APK in the Quest">Only install APK</button>
+                            <button id="btnUninstallAPK"    class="btnSmall"        title="Uninstall a selected APK to be uninstall from your Quest">Uninstall APK</button>
                         </div>
                     </div>
                 </div>
@@ -124,10 +124,10 @@
                     <div class="apk_ops_area">
                         <div class="apk_ops">
                             <!-- TODO: Change to OptionBox -->
-                            <div><input type="checkbox" name="DecraseVolume"id="DecraseVolume"> <label for="DecraseVolume">Decrase volumen by <select id="DVComboBox"></select> (19 recommend)</label></div>
-                            <div><input type="checkbox" name="AudioDefault" id="AudioDefault">  <label for="AudioDefault">Replace audio with default audio file</label></div>
-                            <div><input type="checkbox" name="AudioSilent"  id="AudioSilent">   <label for="AudioSilent">Replace audio with silent audio file</label></div>
-                            <div><input type="checkbox" name="EncodeOGG"    id="EncodeOGG">     <label for="EncodeOGG">Encode OGG Audio File (lower filesize)</label></div>
+                            <div title="Most audio files are too loud for an environment">           <input type="checkbox" name="DecraseVolume"id="DecraseVolume"> <label for="DecraseVolume">Decrase volumen by <select id="DVComboBox"></select> (19 recommend)</label></div>
+                            <div title="Exchange the audio file with the standard fireplace sound">  <input type="checkbox" name="AudioDefault" id="AudioDefault">  <label for="AudioDefault">Replace audio with default audio file</label></div>
+                            <div title="Exchange the audio file with an empty (silent) audio file">  <input type="checkbox" name="AudioSilent"  id="AudioSilent">   <label for="AudioSilent">Replace audio with silent audio file</label></div>
+                            <div title="Re-encode the OGG-audio file to reduce the size">            <input type="checkbox" name="EncodeOGG"    id="EncodeOGG">     <label for="EncodeOGG">Encode OGG Audio File (lower filesize)</label></div>
                         </div>
                         <div>
                             <span id="processStatustxt" class="psTXT-inactive">text</span>
@@ -154,24 +154,24 @@
                     <span>The Buttons on the right area only for environment creator! --&gt;</span>
                     <div>
                         <div>
-                            <button id="btnBuildInstallEnv" class="btnBig">Build and Install Environment</button>
-                            <div>
+                            <button id="btnBuildInstallEnv" class="btnBig"      title="Put your model-files in folder .\Build">Build and Install Environment</button>
+                            <div title="Install APK after build">
                                 <input type="checkbox" id="chckInsllAfBuild" name="installAfterBuild" value="installAfterBuild">
                                 <label for="chckInsllAfBuild">Auto Install after build</label>
                             </div>
-                            <button id="btnUnpackAPK" class="btnSmall">Unpack APK to ..\Build</button>
+                            <button id="btnUnpackAPK" class="btnSmall"          title="Unpack APK to Build folder">Unpack APK to ..\Build</button>
                         </div>
                         <div>
                             <button id="btnOpenBuildFolder" class="btnBig">Open Build Folder</button>
-                            <div>
+                            <div title="Compress all Textures in ../Build to KTX when pressing Build">
                                 <input type="checkbox" id="chckKTXcompress" name="compress-ktx" value="compress-ktx">
                                 <label for="chckKTXcompress">Compress to KTX</label>
                             </div>
-                            <button id="btnKTXtoPNG" class="btnSmall">KTX to PNG Convert</button>
+                            <button id="btnKTXtoPNG" class="btnSmall"           title="Convert all ktx textures to png in Build folder">KTX to PNG Convert</button>
                         </div>
                         <div>
-                            <button id="btnRelAudioNoAudio" class="btnBig">Create 2 releases with and without audio</button>
-                            <div>
+                            <button id="btnRelAudioNoAudio" class="btnBig"      title="Creates WinterLodge/ Classic Home and SpaceStation with Audio and the same with silent Audio">Create 2 releases with and without audio</button>
+                            <div title="Automatically detects when Blender exports new files to .\Build">
                                 <input type="checkbox" id="installBuild" name="installBuild" value="installBuild">
                                 <label for="installBuild">Auto Build and Install</label>
                             </div>
