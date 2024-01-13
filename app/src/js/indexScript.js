@@ -39,6 +39,11 @@ const   modalHelp       = document.querySelector("#modal-help")
 let     crea            = null
 let     apkPath         = null
 let     audPath         = null
+let     jsPath          = null
+let     javaPath        = null
+let     idr             = null
+let     idr2            = null
+let     fin2            = null
 
 //
 //
@@ -178,6 +183,7 @@ ipc.on("term.inData", (e, d) => {
 
 
 async function openEnvAPK() {
+    // TODO: Picture_OLE DragDrop function
     try {
         const dirAPK    = await ipc.invoke('openEnvAPK')
 
@@ -469,21 +475,127 @@ function killer(fPath = filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', '
 
 function tell() {
     // TODO: Complete tell function
+    // TODO: Define jsPath variable
     try {
-        const command       = `"${path.join(filesPath,"7za.exe")}" a "${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}" "${path.join(buildPath, "\*")}"`;
+        const commandA      = `"${path.join(filesPath, "7za.exe")}" a "${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}" "buildPath" "\*"`
+        const commandB      = `"${path.join(filesPath, "7za.exe")}" a "${path.join(fPathTMP, "scene.zip")}" "${path.join(fPathTMP, "_WORLD_MODEL.glft.ovrscene")}" "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`
 
-        execSync            (command);
+        execSync            (commandA)
+
+        fs.renameSync       (`"${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}", "${path.join(fPathTMP, "_WORLD_MODEL.glft.ovrscene")}"`)
+
+        if (!fs.existsSync  (`"${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`))
+            fs.copyFileSync (`"${path.join(filesPath, "silent.ogg")}", "${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`)
+
+        execSync            (commandB)
+
+        if (fs.existsSync   (`"${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`))
+            fs.unlinkSync   (`"${path.join(fPathTMP, "_BACKGROUND_LOOP.ogg")}"`)
+
+        fs.unlinkSync       (`"${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene")}"`)
+
+        fs.readdirSync      (buildPath).forEach(f => {
+                                                    if (path.extname(f) === '.gltf')
+                                                        idr = f.slice(0, -5)
+                                                })
+
+        txtPackage.value    = txtPackage.value.substr(0, 16).concat((txtPackage.value.substr(16)    === "" ?    ClearString(idr, true)  :   ClearString(txtPackage.value.slice(16), true)))
+        txtAppName.value    = txtAppName.value                                                      === "" ?    ClearString(idr, false) :   ClearString(txtAppName.value, false)
+
+        const anman         = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${txtPackage.value.toLowerCase()}">
+    <application android:allowBackup="false" android:label="${txtAppName.value}">
+        <meta-data android:name="com.oculus.environmentVersion" android:value="1"/>
+    </application>
+</manifest>`;
+
+        fs.writeFileSync    (`"${path.join(filesPath, "Environment", "AndroidManifest.xml")}"`, anman);
+
+// --------------------------------------------------------------------------------
+        let idr4            = "", idr5 = "", itsApp = "", an ="Environment"
+
+        fs.copyFileSync     (`"${path.join(fPathTMP, "scene.zip")}"`, `"${path.join(filesPath, "Environment", "assets", "scene.zip")}"`)
+        if (jsPath !== "")  fs.copyFileSync(`"${jsPath}"`, `"${path.join(filesPath, "Environment", "assets", "markup.json")}"`)
+
+        const commandC      = `"${javaPath}" -Xmx1024m -jar "${path.join(filesPath, "apktool_2.3.4.jar")}" b -f -o "${path.join(fPathTMP, "tmpz.apk")}" "${path.join(filesPath, "Environment")}"`
+        const commandD      = `"${javaPath}" -Xmx1024m -jar "${path.join(filesPath, "ApkSigner.jar")}" sign --key "${path.join(filesPath, "apkeasytool.pk8")}" --cert "${path.join(filesPath, "apkeasytool.pem")}" --out "${path.join(fPathTMP, "tmpz.apk")}" "${path.join(fPathTMP, "tmpz.apk")}"`
+
+        execSync            (commandC)
+        term.writeln        ("Sign APK-file\n")
+        execSync            (commandD)
+
+        if (crea > 0) {
+            idr2            = idr2.replace("_environment",  "")
+            idr2            = idr2.replace(".environment",  "")
+            idr2            = idr2.replace("environment",   "")
+
+            if (crea === 2) an += "_Silent"
+
+            const   aa      = `${idr2}_${an}.apk`
+            fin2            = `"${path.join(appRoot, aa)}"`
+            fs.copyFileSync (`"${path.join(fPathTMP, "tmpz.apk")}", "${fin2}"`)
+        } else {
+            const   aa      = `${idr2}_${an}.apk`
+            if (txtAPK.value == "") {
+                itsApp      = `"${path.join(appRoot, aa)}"`
+                fs.copyFileSync (`"${path.join(fPathTMP, "tmpz.apk")}", "${itsApp}}"`)
+            } else {
+                idr4        = txtAPK.value
+                idr4        = idr4.replace("winterlodge", "")
+                idr4        = idr4.replace("winter.lodge", "")
+                idr4        = idr4.replace("winter lodge", "")
+                idr4        = idr4.replace("winter_lodge", "")
+                idr4        = idr4.replace("spacestation", "")
+                idr4        = idr4.replace("space station", "")
+                idr4        = idr4.replace("space.station", "")
+                idr4        = idr4.replace("space_station", "")
+                idr4        = idr4.replace("classichome", "")
+                idr4        = idr4.replace("classic home", "")
+                idr4        = idr4.replace("classic_home", "")
+                idr4        = idr4.replace("classic.home", "")
+                idr4        = idr4.replace("cybercity", "")
+                idr4        = idr4.replace("cyber city", "")
+                idr4        = idr4.replace("cyber_city", "")
+                idr4        = idr4.replace("cyber.city", "")
+                idr4        = idr4.replace("_environment", "")
+                idr4        = idr4.replace(".environment", "")
+                idr4        = idr4.replace("environment", "")
+                idr4        = idr4.replace("..apk", ".apk")
+                idr4        = idr4.replace("_.apk", ".apk")
+                idr4        = idr4.replace("_Environment.apk", ".apk")
+                idr4        = idr4.replace("_environment.apk", ".apk")
+
+                idr5        = `"${path.join(appRoot, idr4.replace('.apk', '_Environment.apk'))}"`
+
+                fs.copyFileSync (`"${path.join(fPathTMP, "tmpz.apk")}"`, idr5)
+
+                itsApp      = idr5
+
+                if (chckInsllAfBuild.checked || crea > 0) {
+                    nex()
+                } else {
+                    const commandE  = `"${path.join(filesPath, "adb.exe")}" install -r "${itsApp}"`
+
+                    term.writeln    ("Try connecting to Quest for APK-install\n")
+
+                    execSync        (commandE)
+                }
+            }
+        }
     } catch (err) {
         showMsgStatus("Error")
         term.writeln(`\n::: ERROR :::\nAn error occurred:\n ${err}`)
         return;
     }
-    // TODO: Tell
-    return;
+}
+
+function nex() {
+    // TODO: Complete function nex()
 }
 
 
 async function unpackAPK(e) {
+    // TODO: Drag function
     try {
         if (buildPath.length != 0) {
             if (window.confirm("This will delete all the files on your Build folder\nDo you want to continue?") === false) {
@@ -502,7 +614,6 @@ async function unpackAPK(e) {
         fs.unlinkSync   (`"${path.join(buildPath, "scene.zip")}"`)
         fs.unlinkSync   (`"${path.join(buildPath, "_WORLD_MODEL.gltf.ovrscene")}"`)
 
-        // TODO: Drag function
         // drag(appPath, "_BACKGROUND_LOOP.ogg")
         if (e === false) {
             showMsgStatus("Done")
@@ -561,6 +672,7 @@ function showMsgStatus(status) {
 }
 
 function packageTXTLimit(e) {
+    // TODO: Prevent delete "com.environment." after this get populated with AppName
     const key   = e.keyCode
 
     if (txtPackage.value.length <= 16) {
@@ -600,4 +712,13 @@ ipc.on('app.loaded', (e, pjson) => {
 
 function playAudioDone() {
     audioPlayer.play({ path: path.join(filesPath, "gong.wav").toString() })
+}
+
+function ClearString(str, bool) {
+    if (bool) {
+        str =   str.replace(/ /g, '_');
+        return  str.replace(/[^a-z0-9_]/gi, '');
+    } else {
+        return  str.replace(/[^a-z0-9/()!.,\-_+*#:;?^$%=`' ]/gi, '');
+    }
 }
