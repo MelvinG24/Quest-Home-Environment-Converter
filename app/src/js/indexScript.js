@@ -83,7 +83,8 @@ btnOnlyInstallAPK   .addEventListener   ('click',   () => { onlyInstallAPK()    
 btnUninstallAPK     .addEventListener   ('click',   () => { uninstallAPK()                                          })
 
 // Package txt Area
-txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimit(e)                                     })
+txtPackage          .addEventListener   ('keydown', (e) => { packageTXTLimitDown(e)                                 })
+txtPackage          .addEventListener   ('keyup',   (e) => { packageTXTLimitUp(e)                                   })
 
 // Build btns Area
 btnBuildInstallEnv  .addEventListener   ('click',   () => { ipc.send('buildInstallEnv')                             })
@@ -590,7 +591,6 @@ function tell() {
 }
 
 function nex() {
-    // TODO: Complete function nex()
     try {
         crea    = 0
         const config    = ini.parse(fs.readFileSync(`"${path.join(filesPath, 'config.ini')}"`, 'utf-8'))
@@ -727,21 +727,34 @@ function showMsgStatus(status) {
     }
 }
 
-function packageTXTLimit(e) {
-    // TODO: Prevent delete "com.environment." after this get populated with AppName
-    const key   = e.keyCode
+function packageTXTLimitDown(e) {
+    const key   = e.keyCode || e.which
 
-    if (txtPackage.value.length <= 16) {
+    if (txtPackage.selectionStart   <= 16   &&
+        txtPackage.selectionEnd     == 16   &&
+        key === 8 ) {
+        e.preventDefault()
+        txtPackage.selectionStart = 16
+    }
+    if (txtPackage.value.length <= 16 || txtPackage.selectionStart < 16) {
+        txtPackage.selectionStart = 16
         if (key === 8   ||
+            key === 37  ||
             key === 46  ||
             key === 88  &&
             e.ctrlKey) {
                 e.preventDefault()
         }
     }
-    if (txtPackage.selectionStart <= 16){
-        txtPackage.setSelectionRange(16, txtPackage.selectionEnd)
-    }
+}
+
+function packageTXTLimitUp(e) {
+    txtPackage.value = txtPackage.value.replace(/ /g, '_')
+
+    if (txtPackage.selectionStart   < 16)
+        txtPackage.selectionStart   = 16
+
+    if (txtPackage.selectionStart <= 16) txtPackage.setSelectionRange(16, txtPackage.selectionEnd)
 }
 
 ipc.on ("modal.toggle", (e, b) =>       { document.querySelector('#modalBlock').classList.toggle('toggleDisplay', b)   })
