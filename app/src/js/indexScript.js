@@ -14,9 +14,10 @@ const {
 const   { Terminal }    = require('xterm');
 const   { FitAddon }    = require('xterm-addon-fit');
 const   { execSync }    = require('child_process');
-const   fs              = require('fs');
-const   path            = require('path');
 const   audioPlayer     = require('node-wav-player');
+const   path            = require('path');
+const   ini             = require('ini')
+const   fs              = require('fs');
 
 const   ipc             = ipcRenderer
 const   fitAddon        = new FitAddon()
@@ -474,7 +475,6 @@ function killer(fPath = filesPath, fFiles = ['tmpz.apk', 'tmp.apk', 'tmp.zip', '
 
 
 function tell() {
-    // TODO: Complete tell function
     // TODO: Define jsPath variable
     try {
         const commandA      = `"${path.join(filesPath, "7za.exe")}" a "${path.join(fPathTMP, "_WORLD_MODEL.gltf.ovrscene.zip")}" "buildPath" "\*"`
@@ -591,6 +591,62 @@ function tell() {
 
 function nex() {
     // TODO: Complete function nex()
+    try {
+        crea    = 0
+        const config    = ini.parse(fs.readFileSync(`"${path.join(filesPath, 'config.ini')}"`, 'utf-8'))
+        const fTMP      = [
+                            '_WORLD_MODEL.gltf.ovrscene',
+                            'scene.zip',
+                            '_BACKGROUND_LOOP.ogg',
+                            'tmpz.apk',
+                            'tmp.apk',
+                            'temp_ec.wav'
+                        ]
+        const fFiles    = [
+                            'scene.zip',
+                            'tmpz.apk',
+                            'tmp.apk',
+                            'tmp.zip',
+                        ]
+
+        fTMP.forEach(f =>   {
+                                if (fs.existsSync(`"${path.join(fPathTMP, f)}"`))
+                                    fs.unlinkSync(`"${path.join(fPathTMP, f)}"`)
+                            })
+        fFiles.forEach(f => {
+                                if (fs.existsSync(`"${path.join(fPathTMP, f)}"`))
+                                    fs.unlinkSync(`"${path.join(fPathTMP, f)}"`)
+                            })
+
+        if (fs.existsSync(`"${path.join(filesPath, 'Environment', 'assets', 'markup.json')}"`))
+            fs.unlinkSync(`"${path.join(filesPath, 'Environment', 'assets', 'markup.json')}"`)
+
+        if (fs.existsSync(`"${path.join(filesPath, 'Environment', 'AndroidManifest.xml')}"`))
+            fs.unlinkSync(`"${path.join(filesPath, 'Environment', 'AndroidManifest.xml')}"`)
+
+        fs.readdirSync(`"${path.join(filesPath, 'Environment', 'build', 'apk')}"`)
+            .forEach(f => {
+                fs.unlinkSync(`"${path.join(filesPath, 'Environment', 'build', 'apk', f)}"`)
+            })
+
+        fs.rmSync(`"${path.join(filesPath, 'Environment', 'build', 'apk')}"`,   { recursive: true, force: true })
+        fs.rmSync(`"${path.join(filesPath, 'Environment', 'build')}"`,          { recursive: true, force: true })
+
+        if (config.Save.AutoClear === '1') {
+            fs.readdirSync(`"${path.join(buildPath)}"`).forEach(f => {
+                fs.unlinkSync(`"${path.join(buildPath, f)}"`)
+            })
+        }
+
+        showMsgStatus   ('Done')
+        playAudioDone   ()
+        term.writeln    (`\nBuild APK finished! ${new Date().toLocaleTimeString()}\n`)
+    } catch(err) {
+        shell           .beep()
+        showMsgStatus   ('Error')
+        term.writeln    (`\n::: ERROR :::\n ${err}\nIf Quest is connected, Please remove the USB-Cable and reconnect it again.\n`)
+        return;
+    }
 }
 
 
